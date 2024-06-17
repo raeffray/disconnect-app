@@ -1,3 +1,3 @@
-pub mod user;
-pub mod person;
-pub mod volunteer;
+pub mod membership;
+pub mod member;
+pub mod fellow;

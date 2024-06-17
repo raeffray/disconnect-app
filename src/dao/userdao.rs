@@ -2,7 +2,7 @@ use deadpool_postgres::Pool;
 use tokio_postgres::Error;
 use std::sync::Arc;
 
-pub async fn get_user(pool: Arc<Pool>, code: &str) -> Result<String, Error> {
+pub async fn get_user(pool: Arc<Pool>) -> Result<String, Error> {
     let client = pool.get().await.unwrap();
 //    client.execute("INSERT INTO users (name, age) VALUES ($1, $2)", &[&name, &age]).await?;
 
