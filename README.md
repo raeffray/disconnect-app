@@ -35,6 +35,9 @@ Creating the migration files
 diesel migration generate create_memberships
 ```
 ```
+diesel migration generate create_members
+```
+```
 diesel migration generate create_fellows
 ```
 ```
