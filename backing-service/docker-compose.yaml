@@ -1,0 +1,24 @@
+version: '3.8'
+
+name: disconnect-app-infra
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: disconnect-app-db
+    environment:
+      POSTGRES_USER: disconnect-app
+      POSTGRES_PASSWORD: qwaszx12
+      POSTGRES_DB: disconnect-app-storage
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - postgres_network
+
+volumes:
+  postgres_data:
+
+networks:
+  postgres_network:

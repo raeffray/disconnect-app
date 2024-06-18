@@ -12,3 +12,4 @@ typed-builder = "0.18.2"
 tokio-postgres = "0.7.10"
 deadpool-postgres = "0.14.0"
 diesel = { version = "2.2.1", features = ["postgres", "r2d2", "chrono"] }
+uuid = { version = "1.8.0", features = ["v4", "fast-rng", "macro-diagnostics"] }
