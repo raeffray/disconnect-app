@@ -2,32 +2,30 @@ use std::error::Error;
 
 use diesel::{
     r2d2::{ConnectionManager, PooledConnection},
-    Connection, ExpressionMethods, Identifiable, PgConnection, RunQueryDsl, SelectableHelper,
+    Connection, ExpressionMethods, PgConnection, RunQueryDsl, SelectableHelper,
 };
 
 use crate::{
     db::{
         model::{
-            member::MemberModel,
-            membership::{MembershipModel},
+            fellow_model::FellowModel, membership_model::MembershipModel
         },
         pool::DbPool,
-        schema::members,
+        schema::fellows::{self},
     },
     domain::{
-        member::Member,
-        membership::{Membership, StatusInPlatform},
+        fellow::{Fellow, FellowshipType}, membership::{Membership, StatusInPlatform}
     },
 };
 
-use super::membershipdao::create_membership;
+use super::membership_dao::create_membership;
 
-pub fn create_member(
+pub fn create_fellow (
     pool: &DbPool,
     new_code: &str,
     status: &StatusInPlatform,
-    new_name: &str,
-) -> Result<Member, Box<dyn Error + Send + Sync>> {
+    new_fellowship_type: &FellowshipType,
+) -> Result<Fellow, Box<dyn Error + Send + Sync>> {
     let mut connection: PooledConnection<ConnectionManager<PgConnection>> = pool
         .get()
         .expect("Failed to get a connection from the pool");
@@ -35,15 +33,17 @@ pub fn create_member(
     connection.transaction(|c| {
         let new_membership_model: MembershipModel = create_membership(pool, new_code, status)?;
 
-        let new_member_model: MemberModel = diesel::insert_into(members::table)
+        let new_fellow_model: FellowModel = diesel::insert_into(fellows::table)
             .values((
-                members::name.eq(new_name),
-                members::membership_id.eq(new_membership_model.id),
+                fellows::fellowship_type.eq(new_fellowship_type),
+                fellows::membership_id.eq(new_membership_model.id),
             ))
-            .returning(MemberModel::as_returning())
+            .returning(FellowModel::as_returning())
             .get_result(c)?;
 
-        Ok(Member::builder()
+
+        let a =    new_fellow_model.get_fellowship_type()    ;
+        Ok(Fellow::builder()
             .membership(
                 Membership::builder()
                     .id(new_membership_model.id)
@@ -51,8 +51,8 @@ pub fn create_member(
                     .code(new_membership_model.code)
                     .build(),
             )
-            .id(new_member_model.get_id().clone())
-            .name(new_member_model.get_name().clone())
+            .id(*new_fellow_model.get_id())
+            .fellowship_type(new_fellow_model.get_fellowship_type().clone())
             .build())
     })
 }

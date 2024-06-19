@@ -1,8 +1,10 @@
 use typed_builder::TypedBuilder;
+use diesel::sql_types::Text;
 
 use super::membership::{Membership, Participant};
 
-#[derive(Debug)]
+#[derive(Debug, Clone, AsExpression, FromSqlRow)]
+#[sql_type = "Text"]
 pub enum FellowshipType {
     HealthWorker,
     Promoter,
@@ -16,11 +18,9 @@ pub struct Fellow {
 }
 
 impl Fellow {
-
     pub fn get_type(&self) -> &FellowshipType {
         &self.fellowship_type
     }
-
 }
 
 impl Participant for Fellow {

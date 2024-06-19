@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 
-use crate::{dao::memberdao::create_member, domain::membership::StatusInPlatform};
+use crate::{dao::{fellow_dao::create_fellow, member_dao::create_member}, domain::{fellow::{Fellow, FellowshipType}, membership::StatusInPlatform}};
 use diesel::{
     r2d2::{ConnectionManager, Pool},
     PgConnection,
@@ -16,6 +16,11 @@ pub async fn create_initial_data() {
     let pool: Arc<Pool<ConnectionManager<PgConnection>>> = create_pool();
 
     match create_member(&pool, &uuid.to_string(), &StatusInPlatform::Active, "test") {
+        Ok(u) => println!("Member Created! [{:?}]", u),
+        Err(e) => println!("Error [{}]", e),
+    }
+
+    match create_fellow(&pool, &uuid.to_string(), &StatusInPlatform::Active, &FellowshipType::HealthWorker) {
         Ok(u) => println!("Member Created! [{:?}]", u),
         Err(e) => println!("Error [{}]", e),
     }

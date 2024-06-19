@@ -8,7 +8,7 @@ pub trait Participant {
 
 
 #[derive(Debug,AsExpression, FromSqlRow)]
- #[sql_type = "Text"]
+#[sql_type = "Text"]
 pub enum StatusInPlatform {
     Active,
     Inactive,
