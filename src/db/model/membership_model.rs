@@ -1,11 +1,12 @@
 use std::io::Write;
 use diesel::prelude::*;
 use typed_builder::TypedBuilder;
+use rocket::serde::{Serialize, Deserialize};
 use crate::{db::schema::memberships, domain::membership::StatusInPlatform};
 
 use diesel::{deserialize::{self, FromSql}, serialize::{self, IsNull, Output, ToSql}, sql_types::Text};
 
-#[derive(Debug, TypedBuilder, Queryable, Identifiable, Selectable)]
+#[derive(Debug, TypedBuilder, Queryable, Identifiable, Selectable, Serialize, Deserialize)]
 #[table_name = "memberships"]
 pub struct MembershipModel {
     pub id: i32,

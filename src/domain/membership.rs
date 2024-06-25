@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use typed_builder::TypedBuilder;
 use diesel::sql_types::Text;
 
@@ -7,7 +8,7 @@ pub trait Participant {
 }
 
 
-#[derive(Debug,AsExpression, FromSqlRow)]
+#[derive(Debug,AsExpression, FromSqlRow, Serialize, Deserialize)]
 #[sql_type = "Text"]
 pub enum StatusInPlatform {
     Active,

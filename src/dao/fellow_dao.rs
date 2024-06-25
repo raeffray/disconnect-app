@@ -7,20 +7,19 @@ use diesel::{
 
 use crate::{
     db::{
-        model::{
-            fellow_model::FellowModel, membership_model::MembershipModel
-        },
+        model::{fellow_model::FellowModel, membership_model::MembershipModel},
         pool::DbPool,
         schema::fellows::{self},
     },
     domain::{
-        fellow::{Fellow, FellowshipType}, membership::{Membership, StatusInPlatform}
+        fellow::{Fellow, FellowshipType},
+        membership::{Membership, StatusInPlatform},
     },
 };
 
 use super::membership_dao::create_membership;
 
-pub fn create_fellow (
+pub fn create_fellow(
     pool: &DbPool,
     new_code: &str,
     status: &StatusInPlatform,
@@ -41,8 +40,7 @@ pub fn create_fellow (
             .returning(FellowModel::as_returning())
             .get_result(c)?;
 
-
-        let a =    new_fellow_model.get_fellowship_type()    ;
+        let a = new_fellow_model.get_fellowship_type();
         Ok(Fellow::builder()
             .membership(
                 Membership::builder()

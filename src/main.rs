@@ -1,17 +1,16 @@
 #[macro_use]
+extern crate rocket;
+#[macro_use]
 extern crate diesel;
 
-mod domain;
+mod web;
 mod dao;
 mod db;
+mod domain;
 
-use db::initial_data::create_initial_data;
+use web::routes::{about, fellow_endpoint, index};
 
-use tokio::main;
-
-#[main]
-async fn main() {
-
-    create_initial_data().await;
-
+#[launch]
+fn rocket() -> _ {
+    rocket::build().mount("/api", routes![index, about, fellow_endpoint])
 }
