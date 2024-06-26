@@ -1,9 +1,10 @@
+use serde::{Deserialize, Serialize};
 use typed_builder::TypedBuilder;
 use diesel::sql_types::Text;
 
 use super::membership::{Membership, Participant};
 
-#[derive(Debug, Clone, AsExpression, FromSqlRow)]
+#[derive(Debug, Clone, AsExpression, FromSqlRow, Serialize, Deserialize)]
 #[sql_type = "Text"]
 pub enum FellowshipType {
     HealthWorker,

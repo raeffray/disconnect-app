@@ -1,14 +1,17 @@
 use std::io::Write;
 use diesel::prelude::*;
+use serde::{Deserialize, Serialize};
 use typed_builder::TypedBuilder;
-use crate::{db::schema::fellows, domain::fellow::FellowshipType};
+use crate::{db::schema::fellows, domain::fellow::{FellowshipType}};
 
 use diesel::{deserialize::{self, FromSql}, serialize::{self, IsNull, Output, ToSql}, sql_types::Text};
 
-#[derive(Debug, TypedBuilder, Queryable, Identifiable, Selectable)]
+#[derive(Debug, TypedBuilder, Queryable, Identifiable, Selectable, Serialize, Deserialize)]
+#[diesel(belongs_to(MembershipModel))]
 #[table_name = "fellows"]
 pub struct FellowModel {
     pub id: i32,
+    membership_id: i32,
     pub fellowship_type: FellowshipType
 }
 
@@ -18,6 +21,9 @@ impl FellowModel {
     }
     pub fn get_fellowship_type(&self) -> &FellowshipType{
         &self.fellowship_type
+    }
+    pub fn get_membership_id(&self) -> &i32{
+        &self.membership_id
     }
 }
 
@@ -38,7 +44,7 @@ impl FromSql<Text, diesel::pg::Pg> for FellowshipType {
         match bytes.as_bytes() {
             b"HealthWorker" => Ok(FellowshipType::HealthWorker),
             b"Promoter" => Ok(FellowshipType::Promoter),
-            _ => Err("Unrecognized enum variant".into()),
+            _ => Err("Unrecognized enum variant".into()),   
         }
     }
 }

@@ -1,8 +1,11 @@
 use rocket::serde::{Serialize, Deserialize};
 use typed_builder::TypedBuilder;
+use diesel::prelude::*;
+
 use crate::db::schema::members;
 
 #[derive(Debug, TypedBuilder, Queryable, Identifiable, Selectable, Serialize, Deserialize)]
+#[diesel(belongs_to(MembershipModel))]
 #[table_name = "members"]
 pub struct MemberModel {
     id: i32,

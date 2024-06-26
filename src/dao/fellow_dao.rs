@@ -1,15 +1,15 @@
-use std::error::Error;
+use std::{error::Error, sync::Arc};
 
 use diesel::{
-    r2d2::{ConnectionManager, PooledConnection},
+    r2d2::{ConnectionManager, Pool, PooledConnection},
     Connection, ExpressionMethods, PgConnection, RunQueryDsl, SelectableHelper,
 };
 
 use crate::{
     db::{
         model::{fellow_model::FellowModel, membership_model::MembershipModel},
-        pool::DbPool,
-        schema::fellows::{self},
+        pool::{create_pool, DbPool},
+        schema::fellows,
     },
     domain::{
         fellow::{Fellow, FellowshipType},
@@ -17,7 +17,9 @@ use crate::{
     },
 };
 
-use super::membership_dao::create_membership;
+use diesel::prelude::*; // Brings the query DSL methods into scope
+
+use super::membership_dao::{create_membership, find_membership};
 
 pub fn create_fellow(
     pool: &DbPool,
@@ -53,4 +55,23 @@ pub fn create_fellow(
             .fellowship_type(new_fellow_model.get_fellowship_type().clone())
             .build())
     })
+}
+
+pub fn find_fellow(pool: &DbPool,
+    membership_code: &str,
+) -> Result<FellowModel, Box<dyn Error + Send + Sync>> {
+    
+    let membership: MembershipModel = find_membership(pool, membership_code).unwrap();
+
+    println!("{:?}", membership.id);
+
+    let mut connection: PooledConnection<ConnectionManager<PgConnection>> = pool
+        .get()
+        .expect("Failed to get a connection from the pool");
+
+        let found_fellow: FellowModel = fellows::table
+        .filter(fellows::membership_id.eq(membership.id))
+        .first::<FellowModel>(&mut connection)?;
+
+    Ok(found_fellow)
 }

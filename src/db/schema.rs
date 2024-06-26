@@ -27,4 +27,4 @@ diesel::table! {
 diesel::joinable!(members -> memberships (membership_id));
 diesel::joinable!(fellows -> memberships (membership_id));
 
-diesel::allow_tables_to_appear_in_same_query!(fellows, memberships, members);
+diesel::allow_tables_to_appear_in_same_query!(memberships, members, fellows);

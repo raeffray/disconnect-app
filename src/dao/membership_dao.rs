@@ -24,10 +24,8 @@ pub fn create_membership(pool: &DbPool, new_code: &str, status: &StatusInPlatfor
 }
 
 
-pub fn find_membership(
-    membership_code: &str,
-) -> Result<MembershipModel, Box<dyn Error + Send + Sync>> {
-    let pool: Arc<Pool<ConnectionManager<PgConnection>>> = create_pool();
+pub fn find_membership(pool: &DbPool, membership_code: &str,) -> Result<MembershipModel, Box<dyn Error + Send + Sync>> {
+    
     let mut connection: PooledConnection<ConnectionManager<PgConnection>> = pool
         .get()
         .expect("Failed to get a connection from the pool");
