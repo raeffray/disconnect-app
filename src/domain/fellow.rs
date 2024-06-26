@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use serde::{Deserialize, Serialize};
 use typed_builder::TypedBuilder;
 use diesel::sql_types::Text;
@@ -11,7 +13,18 @@ pub enum FellowshipType {
     Promoter,
 }
 
-#[derive(Debug, TypedBuilder)]
+impl FromStr for FellowshipType {
+    type Err = ();
+    fn from_str(input: &str) -> Result<FellowshipType, Self::Err> {
+        match input {
+            "HEALTH_WORKER" => Ok(FellowshipType::HealthWorker),
+            "PROMOTER" => Ok(FellowshipType::Promoter),
+            _ => Err(()),
+        }
+    }
+}
+
+#[derive(Debug, TypedBuilder, Serialize, Deserialize)]
 pub struct Fellow {
     id: i32,
     membership: Membership,

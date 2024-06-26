@@ -1,14 +1,14 @@
-use std::{error::Error, sync::Arc};
+use std::error::Error;
 
 use diesel::{
-    r2d2::{ConnectionManager, Pool, PooledConnection},
+    r2d2::{ConnectionManager, PooledConnection},
     Connection, ExpressionMethods, PgConnection, RunQueryDsl, SelectableHelper,
 };
 
 use crate::{
     db::{
         model::{fellow_model::FellowModel, membership_model::MembershipModel},
-        pool::{create_pool, DbPool},
+        pool::DbPool,
         schema::fellows,
     },
     domain::{
@@ -42,7 +42,6 @@ pub fn create_fellow(
             .returning(FellowModel::as_returning())
             .get_result(c)?;
 
-        let a = new_fellow_model.get_fellowship_type();
         Ok(Fellow::builder()
             .membership(
                 Membership::builder()
@@ -57,10 +56,10 @@ pub fn create_fellow(
     })
 }
 
-pub fn find_fellow(pool: &DbPool,
+pub fn find_fellow(
+    pool: &DbPool,
     membership_code: &str,
-) -> Result<FellowModel, Box<dyn Error + Send + Sync>> {
-    
+) -> Result<Fellow, Box<dyn Error + Send + Sync>> {
     let membership: MembershipModel = find_membership(pool, membership_code).unwrap();
 
     println!("{:?}", membership.id);
@@ -69,9 +68,21 @@ pub fn find_fellow(pool: &DbPool,
         .get()
         .expect("Failed to get a connection from the pool");
 
-        let found_fellow: FellowModel = fellows::table
+    let found_fellow: FellowModel = fellows::table
         .filter(fellows::membership_id.eq(membership.id))
         .first::<FellowModel>(&mut connection)?;
 
-    Ok(found_fellow)
+    let fellow = Fellow::builder()
+        .id(found_fellow.id)
+        .fellowship_type(found_fellow.fellowship_type)
+        .membership(
+            Membership::builder()
+                .id(membership.id)
+                .status_in_platform(membership.status_in_platform)
+                .code(membership.code)
+                .build(),
+        )
+        .build();
+
+    Ok(fellow)
 }

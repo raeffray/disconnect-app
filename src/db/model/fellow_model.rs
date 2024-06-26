@@ -2,7 +2,7 @@ use std::io::Write;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 use typed_builder::TypedBuilder;
-use crate::{db::schema::fellows, domain::fellow::{FellowshipType}};
+use crate::{db::schema::fellows, domain::fellow::FellowshipType};
 
 use diesel::{deserialize::{self, FromSql}, serialize::{self, IsNull, Output, ToSql}, sql_types::Text};
 

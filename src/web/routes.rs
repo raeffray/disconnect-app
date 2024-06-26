@@ -1,5 +1,10 @@
-use rocket::{get, response::{status}, serde::json::Json};
-use crate::{dao::{fellow_dao::find_fellow, membership_dao::find_membership}, db::{model::{fellow_model::FellowModel, membership_model::MembershipModel}, pool::{self, create_pool}}};
+
+use std::str::FromStr;
+
+use rocket::{get, http::Status, response::status, serde::json::Json};
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
+use crate::{dao::fellow_dao::{create_fellow, find_fellow}, db::{model::fellow_model::FellowModel, pool::create_pool}, domain::{fellow::{Fellow, FellowshipType}, membership::{Participant, StatusInPlatform}}};
 
 #[get("/")]
 pub fn index() -> &'static str {
@@ -12,7 +17,7 @@ pub fn about() -> &'static str {
 }
 
 #[get("/fellow/<uuid>")]
-pub fn fellow_endpoint(uuid: String) -> Result<Json<FellowModel>, status::NotFound<String>> {
+pub fn fellow_endpoint(uuid: &str) -> Result<Json<Fellow>, status::NotFound<String>> {
     let pool = create_pool();
 
     match find_fellow(&pool, &uuid) {
@@ -21,13 +26,33 @@ pub fn fellow_endpoint(uuid: String) -> Result<Json<FellowModel>, status::NotFou
     }
 }
 
-
-#[post("/fellow/")]
-pub fn create_fellow_endpoint(uuid: String) -> Result<Json<FellowModel>, status::NotFound<String>> {
+#[post("/fellow", format = "application/json", data = "<fellow>")]
+pub fn create_fellow_endpoint(fellow: Json<NewFellowForm>) -> Result<status::Created<String>, status::Custom<String>>  {
     let pool = create_pool();
 
-    match find_fellow(&pool, &uuid) {
-        Ok(m) => Ok(Json(m)),
-        Err(_) => Err(status::NotFound("Membership not found".to_string())),
+    let status = match StatusInPlatform::from_str(&fellow.status_in_platform) {
+        Ok(e) => e,
+        Err(_) => return Err(status::Custom(Status::BadRequest, "Invalid status in platform".to_string()))
+    };
+
+    let fellowship_type = match FellowshipType::from_str(&fellow.fellowship_type) {
+        Ok(e) => e,
+        Err(_) => return Err(status::Custom(Status::BadRequest, "Invalid fellowship type".to_string()))
+    };
+
+    let uuid_gen: Uuid = Uuid::new_v4();
+
+    match create_fellow(&pool,&uuid_gen.to_string(), &status, &fellowship_type) {
+        Ok(fellow) => {
+            let location = format!("/api/fellow/{}", fellow.get_membership().get_code());
+            Ok(status::Created::new(location).body(format!("Fellow created with ID: {}", fellow.get_membership().get_code())))
+        },
+        Err(e) => Err(status::Custom(Status::InternalServerError, e.to_string())),
     }
+}
+
+#[derive(FromForm, Serialize, Deserialize)]
+pub struct NewFellowForm {
+    status_in_platform: String,
+    fellowship_type: String
 }
