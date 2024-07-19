@@ -24,6 +24,14 @@ diesel::table! {
     }
 }
 
+diesel::table! {
+    users (id) {
+        id -> Int4,
+        user_id -> Varchar,
+        secret -> Varchar
+    }
+}
+
 diesel::joinable!(members -> memberships (membership_id));
 diesel::joinable!(fellows -> memberships (membership_id));
 

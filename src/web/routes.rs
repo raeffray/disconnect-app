@@ -51,6 +51,7 @@ pub fn create_fellow_endpoint(fellow: Json<NewFellowForm>) -> Result<status::Cre
     }
 }
 
+
 #[derive(FromForm, Serialize, Deserialize)]
 pub struct NewFellowForm {
     status_in_platform: String,
