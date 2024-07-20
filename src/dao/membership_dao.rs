@@ -7,7 +7,6 @@ use diesel::{
 
 use crate::{db::{model::membership_model::MembershipModel, pool::DbPool, schema::memberships}, domain::membership::StatusInPlatform};
 
-
 pub fn create_membership(pool: &DbPool, new_code: &str, status: &StatusInPlatform) -> Result<MembershipModel, Box<dyn Error + Send + Sync>> {
     let mut connection: PooledConnection<ConnectionManager<PgConnection>> = pool
         .get()

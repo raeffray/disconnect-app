@@ -4,7 +4,7 @@ use std::str::FromStr;
 use rocket::{get, http::Status, response::status, serde::json::Json};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use crate::{dao::fellow_dao::{create_fellow, find_fellow}, db::{model::fellow_model::FellowModel, pool::create_pool}, domain::{fellow::{Fellow, FellowshipType}, membership::{Participant, StatusInPlatform}}};
+use crate::{dao::fellow_dao::{create_fellow, find_fellow}, db::pool::create_pool, domain::{fellow::{Fellow, FellowshipType}, membership::{Participant, StatusInPlatform}}};
 
 #[get("/")]
 pub fn index() -> &'static str {
@@ -18,7 +18,7 @@ pub fn about() -> &'static str {
 
 #[get("/fellow/<uuid>")]
 pub fn fellow_endpoint(uuid: &str) -> Result<Json<Fellow>, status::NotFound<String>> {
-    let pool = create_pool();
+    let pool: std::sync::Arc<diesel::r2d2::Pool<diesel::r2d2::ConnectionManager<diesel::PgConnection>>> = create_pool();
 
     match find_fellow(&pool, &uuid) {
         Ok(m) => Ok(Json(m)),

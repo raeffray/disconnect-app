@@ -1,12 +1,5 @@
 use serde::{Deserialize, Serialize};
-
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Claims {
-    pub(crate) sub: String,
-    pub(crate) exp: usize,
-    pub(crate) actions: Vec<String>,
-}
+use typed_builder::TypedBuilder;
 
 #[derive(Debug, Deserialize)]
 pub struct JwtRequest {
@@ -14,3 +7,8 @@ pub struct JwtRequest {
     pub(crate) secret: String,
 }
 
+#[derive(TypedBuilder, Debug, Serialize, Deserialize)]
+pub struct JwtResponse {
+    pub(crate) expiration: String,
+    pub(crate) token: String
+}
