@@ -18,3 +18,9 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 chrono = "0.4"
 jsonwebtoken = "8"
+actix-web = "4.8.0"
+actix-service = "2.0.2"
+
+[dependencies.role_guard_macro]
+path = "../role_guard_macro" 
+

@@ -4,3 +4,4 @@ pub mod claim;
 pub mod service;
 pub mod app_users_dao;
 pub mod system_user;
+pub mod middleware;
