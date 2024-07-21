@@ -20,7 +20,7 @@ pub fn about() -> &'static str {
 }
 
 
-#[log_execution]
+#[log_execution(roles="admin")]
 #[get("/fellow/<uuid>")]
 pub fn fellow_endpoint(jwt_guard: JwtGuard, uuid: &str) -> Result<Json<Fellow>, status::NotFound<String>> {
     let pool: std::sync::Arc<diesel::r2d2::Pool<diesel::r2d2::ConnectionManager<diesel::PgConnection>>> = create_pool();
