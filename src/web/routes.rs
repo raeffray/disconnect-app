@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use rocket::{get, http::Status, response::status, serde::json::Json};
 
-use role_guard_macro::log_execution;
+use role_guard_macro::check_roles;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use crate::{dao::fellow_dao::{create_fellow, find_fellow}, db::pool::create_pool, domain::{fellow::{Fellow, FellowshipType}, membership::{Participant, StatusInPlatform}}};
@@ -20,7 +20,7 @@ pub fn about() -> &'static str {
 }
 
 
-#[log_execution(roles="admin")]
+#[check_roles(role = "admin")]
 #[get("/fellow/<uuid>")]
 pub fn fellow_endpoint(jwt_guard: JwtGuard, uuid: &str) -> Result<Json<Fellow>, status::NotFound<String>> {
     let pool: std::sync::Arc<diesel::r2d2::Pool<diesel::r2d2::ConnectionManager<diesel::PgConnection>>> = create_pool();
