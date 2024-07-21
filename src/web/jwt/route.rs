@@ -17,9 +17,13 @@ pub fn generate_jwt_token_route(jwt_request: Json<JwtRequest>) -> Result<status:
     //find_system_user(&pool, user_id, secret)
     let result = find_system_user(&pool, user_id, secret);
 
+    let audience = vec!["https://api.example.com".to_string()];
+    let issuer = "https://your-auth-server.com";
+
+
     match result {
         Ok(pair) => {
-            let jwt_response: JwtResponse = generate_jwt(&pair.0.user_id, &pair.0.secret, pair.1);
+            let jwt_response: JwtResponse = generate_jwt(&pair.0.user_id, &pair.0.secret, pair.1, audience, &issuer);
             
             Ok(status::Custom(Status::Ok, Json(jwt_response)))
         }
