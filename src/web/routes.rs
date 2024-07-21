@@ -40,7 +40,7 @@ pub fn create_fellow_endpoint(fellow: Json<NewFellowForm>) -> Result<status::Cre
         Err(_) => return Err(status::Custom(Status::BadRequest, "Invalid status in platform".to_string()))
     };
 
-    let fellowship_type = match FellowshipType::from_str(&fellow.fellowship_type) {
+    let fellowship_type: FellowshipType = match FellowshipType::from_str(&fellow.fellowship_type) {
         Ok(e) => e,
         Err(_) => return Err(status::Custom(Status::BadRequest, "Invalid fellowship type".to_string()))
     };

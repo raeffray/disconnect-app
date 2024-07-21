@@ -37,7 +37,7 @@ pub fn find_system_user(pool: &DbPool, user_id: &str, secret: &str) -> Result<(S
     let user_roles: Vec<String> = system_user_roles::table
         .inner_join(roles::table.on(system_user_roles::role_id.eq(roles::id)))
         .filter(system_user_roles::system_user_id.eq(user.id))
-        .select(roles::name)
+        .select(roles::uuid)
         .load::<String>(&mut connection)?;
 
     Ok((user, user_roles))

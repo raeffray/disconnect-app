@@ -15,24 +15,17 @@ pub(crate) fn generate_jwt(user_id: &str, secret: &str, roles: Vec<String>, audi
     let exp_str: String = env::var("JWT_EXPIRATION_SECONDS").expect("Expiration time not set");
     let exp_seconds: i64 = exp_str.parse().expect("Invalid number for expiration seconds");
 
-    println!("Expiration seconds set to: {:?}", exp_seconds);
-
     let expiration: usize = Utc::now()
         .checked_add_signed(Duration::seconds(exp_seconds))
         .expect("valid timestamp")
         .timestamp() as usize;
-
-    // Output the calculated expiration timestamp
-    println!("Calculated expiration timestamp: {}", expiration);
-    println!("Current timestamp: {}", Utc::now().timestamp());
-
 
     let claims: Claims = Claims::builder()
         .sub(user_id.to_owned())
         .exp(expiration)
         .roles(roles)
         .aud(audience)
-        .iss(issuer.to_owned()) // Now adding the audience
+        .iss(issuer.to_owned())
         .build();
 
     let readable_expiration_date = timestamp_to_readable(expiration);

@@ -7,6 +7,7 @@ CREATE TABLE systemusers (
 
 CREATE TABLE roles (
     id SERIAL PRIMARY KEY,
+    uuid VARCHAR(255) NOT NULL UNIQUE,
     name VARCHAR(255) NOT NULL UNIQUE
 );
 
@@ -17,3 +18,4 @@ CREATE TABLE system_user_roles (
     FOREIGN KEY (system_user_id) REFERENCES systemusers(id) ON DELETE CASCADE,
     FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
 );
+

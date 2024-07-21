@@ -20,7 +20,6 @@ pub fn generate_jwt_token_route(jwt_request: Json<JwtRequest>) -> Result<status:
     let audience = vec!["https://api.example.com".to_string()];
     let issuer = "https://your-auth-server.com";
 
-
     match result {
         Ok(pair) => {
             let jwt_response: JwtResponse = generate_jwt(&pair.0.user_id, &pair.0.secret, pair.1, audience, &issuer);
